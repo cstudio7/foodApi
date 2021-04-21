@@ -22,7 +22,6 @@ jobs:
           name: run tests
           command: |
             export COVERALLS_REPO_TOKEN=F4AALtuO8fA62vsdfuhkm3Tw46RDzOmZD >> $BASH_ENV
-            npm test -- -u
             npm run coverage
             
       - store_artifacts:
