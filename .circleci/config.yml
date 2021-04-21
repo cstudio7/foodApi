@@ -1,21 +1,30 @@
-version: 2.1
+version: 2
 jobs:
   build:
-    working_directory: ~/bookapp
+    docker:
+      - image: circleci/node
+
+    working_directory: ~/repo
 
     steps:
       - checkout
-
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-
-      - run: yarn install
-
+      - run: npm install
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run: npm test
+      # run tests!
+      - run:
+          name: run tests
+          command: |
+            export COVERALLS_REPO_TOKEN=F4AALtuO8fA62vsdfuhkm3Tw46RDzOmZD >> $BASH_ENV
+            npm test -- -u
+            npm run coverage
+            
+      - store_artifacts:
+          path: coverage
+          destination: coverage
