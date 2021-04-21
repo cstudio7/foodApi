@@ -1,7 +1,28 @@
 version: 2.1
-orbs:
-  node: circleci/node@3.0.0
-workflows:
-  node-tests:
-    jobs:
-      - node/test
+jobs:
+  build:
+    working_directory: ~/cyclops-backend
+    docker:
+      - image: circleci/node:10.16.0
+        environment:
+          NODE_ENV: test
+          DATABASE_URL_TEST: postgresql://postgres@localhost/circle_test
+          GOOGLE_CALLBACK_URL: http://localhost:3000/api/v1/oauth/google
+      - image: circleci/postgres:10
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: npm test
